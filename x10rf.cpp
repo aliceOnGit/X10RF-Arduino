@@ -8,7 +8,7 @@ Library to send x10 messages via a cheap 433Mhz OOK device. No X10 Firecracker (
 Decoding messages is not implemented.
 This library can emulate x10 switches and security devices and also RFXMeter and RFXSensor devices manufactured by RFXCom. (www.rfxcom.com)
 
-Tested on a TI Stellarpad (LM4F120H5QR) and Energia 0101E0010. This should also work on Arduino (small modifications) or other TI Launchpad devices.
+Tested on a TI Stellaris Launchpad (LM4F120H5QR) and Energia 0101E0010. This should also work on Arduino (small modifications) or other TI Launchpad devices.
 */
 
 #include <stdlib.h>
@@ -43,7 +43,7 @@ x10rf::x10rf(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats)
 }
 
 void x10rf::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_value){
-	uint8_t x10buff[5]; // Set message buffer
+	uint8_t x10buff[6]; // Set message buffer
 	x10buff[0] = rfxm_address;
 	x10buff[1] = (~x10buff[0] & 0xF0) + (x10buff[0] & 0xF); // Calculate byte1 (byte 1 complement upper nibble of byte0)
 	if (rfxm_value > 0xFFFFFF) rfxm_value = 0; 	// We only have 3 byte for data. Is overflowed set to 0	
@@ -114,8 +114,8 @@ void x10rf::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_v
 	SendCommand(x10buff, sizeof(x10buff)); // Send byte to be broadcasted
 }
 
-void x10rf::RFXsensor(uint8_t rfxs_address,uint8_t rfxs_type, char rfxs_packet_type, uint8_t rfxs_value){
-	uint8_t x10buff[3]; // Set message buffer 4 bytes
+void x10rf::RFXsensor(uint8_t rfxs_address, uint8_t rfxs_type, char rfxs_packet_type, uint8_t rfxs_value){
+	uint8_t x10buff[4]; // Set message buffer 4 bytes
 	x10buff[0] = (rfxs_address << 2);
 	switch (rfxs_type) {
 		case 't': break; 	// Temperature (default)
@@ -153,7 +153,7 @@ void x10rf::RFXsensor(uint8_t rfxs_address,uint8_t rfxs_type, char rfxs_packet_t
 }
 
 void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command){
-	uint8_t x10buff[3]; // Set message buffer 4 bytes
+	uint8_t x10buff[4]; // Set message buffer 4 bytes
 	switch(tolower(house_code)) {
 		case 'a': x10buff[0] = B0110; break;
 		case 'b': x10buff[0] = B0111; break;
@@ -195,7 +195,7 @@ void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command){
 }
 
 void x10rf::x10Security(uint8_t address, uint8_t command){
-	uint8_t x10buff[3]; // Set message buffer 4 bytes
+	uint8_t x10buff[4]; // Set message buffer 4 bytes
 	x10buff[0] = address;
 	x10buff[1] = (~x10buff[0] & 0xF) + (x10buff[0] & 0xF0); // Calculate byte1 (byte 1 complement 
 	x10buff[2] = command;
