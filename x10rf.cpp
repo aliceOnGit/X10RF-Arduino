@@ -1,5 +1,5 @@
 /*
-x10rf.cpp 
+x10rf.cpp
 Library for sending x10 messages by RF.
 Created by Pieter Paul Baron (embedded [at] ppbaron.nl), November 2013.
 Released into the public domain.
@@ -32,13 +32,13 @@ Tested on a TI Stellaris Launchpad (LM4F120H5QR) and Energia 0101E0010. This sho
 void x10rf::begin()
 {
 	pinMode(_tx_pin, OUTPUT);
-	if (_led_pin > 0) pinMode(_led_pin, OUTPUT); 
-} 
+	if (_led_pin > 0) pinMode(_led_pin, OUTPUT);
+}
 
 x10rf::x10rf(uint8_t tx_pin, uint8_t led_pin, uint8_t rf_repeats)
 {
 		_tx_pin = tx_pin;
-		_led_pin = led_pin;		
+		_led_pin = led_pin;
 		_rf_repeats = rf_repeats;
 }
 
@@ -46,7 +46,7 @@ void x10rf::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_v
 	uint8_t x10buff[6]; // Set message buffer
 	x10buff[0] = rfxm_address;
 	x10buff[1] = (~x10buff[0] & 0xF0) + (x10buff[0] & 0xF); // Calculate byte1 (byte 1 complement upper nibble of byte0)
-	if (rfxm_value > 0xFFFFFF) rfxm_value = 0; 	// We only have 3 byte for data. Is overflowed set to 0	
+	if (rfxm_value > 0xFFFFFF) rfxm_value = 0; 	// We only have 3 byte for data. Is overflowed set to 0
 	// Packet type goed into MSB nibble of byte 5. Max 15 (B1111) allowed
 	// Use switch case to filter invalid data types
 	switch(rfxm_packet_type) {
@@ -70,18 +70,18 @@ void x10rf::RFXmeter(uint8_t rfxm_address, uint8_t rfxm_packet_type, long rfxm_v
 			}
 			x10buff[2] = rfxm_value;
 			break;
-		case 0x02: // calibrate value in <counter value> in µsec.	
+		case 0x02: // calibrate value in <counter value> in µsec.
 			x10buff[4] = (uint8_t) ((rfxm_value >> 16) & 0xff);
 			x10buff[2] = (uint8_t) ((rfxm_value >> 8) & 0xff);
-			x10buff[3] = (uint8_t) (rfxm_value & 0xff);		
-			break; 
-		case 0x03: break;// new address set 
-		case 0x04: break; // counter value reset to zero 
+			x10buff[3] = (uint8_t) (rfxm_value & 0xff);
+			break;
+		case 0x03: break;// new address set
+		case 0x04: break; // counter value reset to zero
 		case 0x0B: // counter value set
 			x10buff[4] = (uint8_t) ((rfxm_value >> 16) & 0xff);
 			x10buff[2] = (uint8_t) ((rfxm_value >> 8) & 0xff);
 			x10buff[3] = (uint8_t) (rfxm_value & 0xff);
-			break; 
+			break;
 		case 0x0C: break; // set interval mode within 5 seconds
 		case 0x0D: break; // calibration mode within 5 seconds
 		case 0x0E: break; // set address mode within 5 seconds
@@ -134,21 +134,21 @@ void x10rf::RFXsensor(uint8_t rfxs_address, uint8_t rfxs_type, char rfxs_packet_
 		switch(rfxs_packet_type) {
 			case 't': //temperature sensor (MSB = 0.5 degrees bit off)
 				x10buff[3] = 0x00;
-			break; 
-			case 'T': //emperature sensor (MSB = 0.5 degrees bit on)  
+			break;
+			case 'T': //emperature sensor (MSB = 0.5 degrees bit on)
 				x10buff[3] = 0x80;
-			break; 
-			case 'h': //RFU (humidity sensor)  
+			break;
+			case 'h': //RFU (humidity sensor)
 				x10buff[3] = 0x20;
 			break;
 			case 'p': //RFU (pressure sensor)
 				x10buff[3] = 0x40;
-			break; 
+			break;
 			default:
 				x10buff[3] = 0x00;
 			}
 	uint8_t parity = ~(((x10buff[0] & 0XF0) >> 4) + (x10buff[0] & 0XF) + ((x10buff[1] & 0XF0) >> 4) + (x10buff[1] & 0XF) + ((x10buff[2] & 0XF0) >> 4) + (x10buff[2] & 0XF) + ((x10buff[3] & 0XF0) >> 4));
-	x10buff[3] = (x10buff[3] & 0xf0) + (parity & 0XF);	
+	x10buff[3] = (x10buff[3] & 0xf0) + (parity & 0XF);
 	SendCommand(x10buff, sizeof(x10buff));
 }
 
@@ -166,7 +166,7 @@ void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command){
 		case 'i': x10buff[0] = B1110; break;
 		case 'j': x10buff[0] = B1111; break;
 		case 'k': x10buff[0] = B1100; break;
-		case 'l': x10buff[0] = B1101; break;		
+		case 'l': x10buff[0] = B1101; break;
 		case 'm': x10buff[0] = B0000; break;
 		case 'n': x10buff[0] = B0001; break;
 		case 'o': x10buff[0] = B0010; break;
@@ -197,33 +197,33 @@ void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command){
 void x10rf::x10Security(uint8_t address, uint8_t command){
 	uint8_t x10buff[4]; // Set message buffer 4 bytes
 	x10buff[0] = address;
-	x10buff[1] = (~x10buff[0] & 0xF) + (x10buff[0] & 0xF0); // Calculate byte1 (byte 1 complement 
+	x10buff[1] = (~x10buff[0] & 0xF) + (x10buff[0] & 0xF0); // Calculate byte1 (byte 1 complement
 	x10buff[2] = command;
 	x10buff[3] = ~x10buff[2];
 	// x10buff[4] = code; // Couldn't get 48 bit security working.
 	// if((x10buff[4] % 2) == 0) { x10buff[5] = 0;} //Calc even parity
-	// else { x10buff[5] = 0x80;}	
+	// else { x10buff[5] = 0x80;}
 	SendCommand(x10buff, sizeof(x10buff));
 
 }
 
 void x10rf::SendCommand(uint8_t *data, uint8_t size){
-	if (_led_pin > 0) digitalWrite(_led_pin, HIGH); 
+	if (_led_pin > 0) digitalWrite(_led_pin, HIGH);
 	for (int i = 0; i < _rf_repeats; i++){
-		SEND_HIGH();delayMicroseconds(X10_RF_SB_LONG); 
-		SEND_LOW();delayMicroseconds(X10_RF_SB_SHORT); 
+		SEND_HIGH();delayMicroseconds(X10_RF_SB_LONG);
+		SEND_LOW();delayMicroseconds(X10_RF_SB_SHORT);
 		for(int i=0; i <= size; i++) {
 			SendX10RfByte(data[i]);
 		}
-	SendX10RfBit(1); 
+	SendX10RfBit(1);
 	delayMicroseconds(X10_RF_GAP);
 	}
-	if (_led_pin > 0) digitalWrite(_led_pin, LOW); 
+	if (_led_pin > 0) digitalWrite(_led_pin, LOW);
 }
 
 void x10rf::SendX10RfByte(uint8_t data){
 	//Serial.println("\n");
-	for (int i=7; i >= 0 ; i--){ // send bits from byte 
+	for (int i=7; i >= 0 ; i--){ // send bits from byte
 		SendX10RfBit((bitRead(data,i)==1));
 		//Serial.print(bitRead(data,i));
 	}
@@ -232,7 +232,7 @@ void x10rf::SendX10RfByte(uint8_t data){
 void x10rf::SendX10RfBit(unsigned int databit){
     SEND_HIGH();delayMicroseconds(X10_RF_BIT_SHORT);
     SEND_LOW();delayMicroseconds(X10_RF_BIT_SHORT);
-    if (databit) delayMicroseconds(X10_RF_BIT_LONG);    
+    if (databit) delayMicroseconds(X10_RF_BIT_LONG);
 }
 
 void x10rf::SEND_HIGH() {
