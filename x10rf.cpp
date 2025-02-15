@@ -155,7 +155,7 @@ void x10rf::RFXsensor(uint8_t rfxs_address, uint8_t rfxs_type,
 
   static const uint8_t BUFFER_SIZE = 4;
 
-  uint8_t x10buff[BUFFER_SIZE;  4 bytes
+  uint8_t x10buff[BUFFER_SIZE]; // 4 bytes
   x10buff[0] = (rfxs_address << 2);
   switch (rfxs_type) {
   case 't':
@@ -200,8 +200,8 @@ void x10rf::RFXsensor(uint8_t rfxs_address, uint8_t rfxs_type,
 
 void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command) {
   static const uint8_t BUFFER_SIZE = 4;
-  uint8_t x10buff[BUFFER_SIZE];
-  4 bytes switch (tolower(house_code)) {
+  uint8_t x10buff[BUFFER_SIZE]; //4 bytes 
+  switch (tolower(house_code)) {
   case 'a':
     x10buff[0] = B0110;
     break;
@@ -278,8 +278,8 @@ void x10rf::x10Switch(char house_code, uint8_t unit_code, uint8_t command) {
 
 void x10rf::x10Security(uint8_t address, uint8_t command) {
   static const uint8_t BUFFER_SIZE = 4;
-  uint8_t x10buff[BUFFER_SIZE];
-  4 bytes x10buff[0] = address;
+  uint8_t x10buff[BUFFER_SIZE]; // 4 bytes 
+  x10buff[0] = address;
   x10buff[1] = (~x10buff[0] & 0xF) +
                (x10buff[0] & 0xF0); // Calculate byte1 (byte 1 complement
   x10buff[2] = command;
